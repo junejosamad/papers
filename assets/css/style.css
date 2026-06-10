@@ -538,6 +538,74 @@ select {
     gap: 24px;
 }
 
+.opensource-card {
+    background: linear-gradient(135deg, #102A43 0%, #1976D2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 22px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(25, 118, 210, 0.24);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.opensource-card-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.opensource-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.opensource-card-icon .material-icons {
+    font-size: 28px;
+}
+
+.opensource-card h3 {
+    font-size: 20px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: white;
+}
+
+.opensource-card p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.88);
+    line-height: 1.5;
+    max-width: 760px;
+}
+
+.opensource-card-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
+
+.opensource-card-actions .btn {
+    background: white;
+    color: var(--md-primary);
+    white-space: nowrap;
+}
+
+.opensource-card-actions .btn-secondary {
+    background: rgba(255, 255, 255, 0.14);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
 /* Filters Sidebar */
 .filters-card {
     background: var(--md-surface);
@@ -966,6 +1034,15 @@ input[type="file"] {
         grid-template-columns: 1fr;
     }
 
+    .opensource-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .opensource-card-actions {
+        justify-content: flex-start;
+    }
+
     .filters-card {
         position: relative;
         top: 0;
@@ -983,6 +1060,19 @@ input[type="file"] {
 
     .header {
         padding: 16px;
+    }
+
+    .opensource-card {
+        padding: 18px;
+    }
+
+    .opensource-card-content {
+        flex-direction: column;
+    }
+
+    .opensource-card-actions .btn {
+        width: 100%;
+        justify-content: center;
     }
 
     .logo-text h1 {

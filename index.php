@@ -218,6 +218,51 @@
             flex-wrap: wrap;
         }
 
+        .open-source-callout {
+            margin-top: 28px;
+            padding: 18px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.14);
+            color: white;
+            backdrop-filter: blur(10px);
+            max-width: 620px;
+        }
+
+        .open-source-callout strong {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        .open-source-callout p {
+            font-size: 15px;
+            line-height: 1.5;
+            margin: 0 0 12px 0;
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        .open-source-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .open-source-links a {
+            color: white;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .open-source-links a:hover {
+            text-decoration: underline;
+        }
+
         .hero-buttons .btn {
             font-size: 16px;
             padding: 15px 35px;
@@ -648,6 +693,14 @@
                 justify-content: center;
             }
 
+            .open-source-callout {
+                text-align: left;
+            }
+
+            .open-source-links {
+                flex-direction: column;
+            }
+
             .stats,
             .features,
             .how-it-works,
@@ -727,6 +780,26 @@
                     <a href="#features" class="btn btn-outline" style="border-color: white; color: white;">
                         Learn More
                     </a>
+                </div>
+                <div class="open-source-callout">
+                    <strong>
+                        <span class="material-icons">code</span>
+                        Open source and ready for contributors
+                    </strong>
+                    <p>
+                        Bahria Papers Portal is now public on GitHub. Students and developers can help improve the file structure,
+                        security, API, documentation, and mobile experience.
+                    </p>
+                    <div class="open-source-links">
+                        <a href="https://github.com/junejosamad/papers" target="_blank" rel="noopener">
+                            <span class="material-icons">open_in_new</span>
+                            View GitHub
+                        </a>
+                        <a href="https://github.com/junejosamad/papers/blob/main/docs/PRIORITIES.md" target="_blank" rel="noopener">
+                            <span class="material-icons">task_alt</span>
+                            See priority issues
+                        </a>
+                    </div>
                 </div>
             </div>
             <div class="hero-image">

@@ -385,6 +385,31 @@ function buildPaginationUrl($page_num)
         <div class="container">
             <?php include 'includes/header.php'; ?>
 
+            <div class="opensource-card">
+                <div class="opensource-card-content">
+                    <div class="opensource-card-icon">
+                        <span class="material-icons">code</span>
+                    </div>
+                    <div>
+                        <h3>Help shape Bahria Papers Portal</h3>
+                        <p>
+                            This project is now open source. Contributors can pick priority issues, improve the file structure,
+                            harden security, document APIs, and build features the student community needs.
+                        </p>
+                    </div>
+                </div>
+                <div class="opensource-card-actions">
+                    <a href="https://github.com/junejosamad/papers" target="_blank" rel="noopener" class="btn">
+                        <span class="material-icons">open_in_new</span>
+                        GitHub
+                    </a>
+                    <a href="https://github.com/junejosamad/papers/blob/main/docs/PRIORITIES.md" target="_blank" rel="noopener" class="btn btn-secondary">
+                        <span class="material-icons">task_alt</span>
+                        Priority Issues
+                    </a>
+                </div>
+            </div>
+
             <div class="main-content">
                 <div class="filters-card">
                     <h3>
