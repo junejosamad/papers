@@ -6,9 +6,10 @@ Thanks for helping improve Bahria Papers Portal.
 
 1. Fork the repository.
 2. Create a feature branch from `main`.
-3. Configure local environment variables from `.env.example`.
-4. Keep changes focused and avoid committing generated files.
-5. Run PHP syntax checks before opening a pull request:
+3. Pick an issue from `docs/PRIORITIES.md`.
+4. Configure local environment variables from `.env.example`.
+5. Keep changes focused and avoid committing generated files.
+6. Run PHP syntax checks before opening a pull request:
 
 ```bash
 php -l config.php
@@ -38,6 +39,19 @@ Include:
 - Why it changed
 - How you tested it
 - Any database migration or configuration changes
+
+## Issue Priority
+
+Start with issues in `docs/PRIORITIES.md`.
+
+Priority order:
+
+- `priority: critical` - security, data loss, broken install, broken auth/email
+- `priority: high` - core workflow bugs
+- `priority: medium` - important improvements
+- `priority: low` - polish and cleanup
+
+New contributors should look for `good first issue`.
 
 ## Do Not Commit
 

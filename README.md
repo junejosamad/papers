@@ -77,6 +77,7 @@ Core docs:
 - `docs/DEVELOPMENT.md` - contributor development guide
 - `docs/DEPLOYMENT.md` - production/cPanel deployment
 - `docs/TROUBLESHOOTING.md` - common issues
+- `docs/PRIORITIES.md` - prioritized issues for contributors
 
 ## Email Sending
 
