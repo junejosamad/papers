@@ -20,7 +20,53 @@ This file lists issues contributors should fix first. Maintainers should convert
 
 ## Priority 1: Critical
 
-### 1. Replace Browser-Callable Migration Scripts
+### 1. Reorganize and Document the File Structure
+
+Labels: `priority: critical`, `area: setup`, `area: docs`, `help wanted`
+
+Files:
+
+- Project root PHP pages
+- `api/`
+- `includes/`
+- `assets/`
+- `database/`
+- `docs/PROJECT_STRUCTURE.md`
+- `docs/ARCHITECTURE.md`
+
+Problem:
+
+The project was originally built as a cPanel-style PHP app, so many user-facing pages live in the project root. Contributors should first improve the structure so the codebase is easier to understand, maintain, and extend.
+
+Expected fix:
+
+- Propose a cleaner structure before moving files.
+- Group related application code consistently.
+- Keep public routes working, or add compatibility redirects where needed.
+- Separate runtime/public assets from backend helpers.
+- Keep `admin/`, uploads, logs, cache files, and secrets excluded.
+- Update documentation after any structure change.
+
+Suggested target direction:
+
+```text
+public/          Web entry files and assets intended for browser access
+app/             Shared application services/helpers
+api/             JSON API router and endpoints
+database/        Schema and migrations
+docs/            Project documentation
+uploads/         Runtime uploads, ignored by Git
+```
+
+Acceptance criteria:
+
+- The app still works after restructuring.
+- Links, includes, upload paths, and API routes are updated.
+- `docs/PROJECT_STRUCTURE.md` reflects the new structure.
+- `README.md` setup instructions remain accurate.
+- No private/admin/runtime files are reintroduced.
+
+### 2. Replace Browser-Callable Migration Scripts
 
 Labels: `priority: critical`, `area: security`, `area: database`
 
@@ -44,7 +90,7 @@ Acceptance criteria:
 - Visiting migration scripts in a browser does not modify the database.
 - Local setup docs still explain how to run migrations safely.
 
-### 2. Consolidate the Database Schema
+### 3. Consolidate the Database Schema
 
 Labels: `priority: critical`, `area: database`, `area: setup`
 
@@ -68,7 +114,7 @@ Acceptance criteria:
 - A fresh install works after importing `database/schema.php`.
 - `api/safe_migrate.php` reports no missing required schema on a fresh install.
 
-### 3. Harden File Upload Validation
+### 4. Harden File Upload Validation
 
 Labels: `priority: critical`, `area: security`
 
@@ -97,7 +143,7 @@ Acceptance criteria:
 
 ## Priority 2: High
 
-### 4. Add CSRF Protection to Web Forms
+### 5. Add CSRF Protection to Web Forms
 
 Labels: `priority: high`, `area: security`
 
@@ -127,7 +173,7 @@ Acceptance criteria:
 - Normal forms work.
 - Missing/invalid CSRF token rejects POST requests.
 
-### 5. Normalize Auth Rules Across Web and API
+### 6. Normalize Auth Rules Across Web and API
 
 Labels: `priority: high`, `area: security`, `area: api`
 
@@ -146,7 +192,7 @@ Acceptance criteria:
 - Protected routes cannot be accessed anonymously.
 - Docs clearly state auth model per route group.
 
-### 6. Improve Error Handling for Production
+### 7. Improve Error Handling for Production
 
 Labels: `priority: high`, `area: setup`, `area: security`
 
@@ -167,7 +213,7 @@ Acceptance criteria:
 
 ## Priority 3: Medium
 
-### 7. Add Automated Syntax Check Workflow
+### 8. Add Automated Syntax Check Workflow
 
 Labels: `priority: medium`, `area: docs`, `good first issue`
 
@@ -185,7 +231,7 @@ Acceptance criteria:
 
 - Pull requests run PHP syntax checks automatically.
 
-### 8. Improve Mobile Responsiveness on Auth and Dashboard Pages
+### 9. Improve Mobile Responsiveness on Auth and Dashboard Pages
 
 Labels: `priority: medium`, `area: frontend`, `help wanted`
 
@@ -210,7 +256,7 @@ Acceptance criteria:
 - No horizontal overflow at 320px width.
 - Main dashboard actions remain reachable on mobile.
 
-### 9. Document API Request/Response Examples
+### 10. Document API Request/Response Examples
 
 Labels: `priority: medium`, `area: api`, `area: docs`, `good first issue`
 
@@ -234,7 +280,7 @@ Acceptance criteria:
 
 ## Priority 4: Low
 
-### 10. Extract Repeated UI Styles
+### 11. Extract Repeated UI Styles
 
 Labels: `priority: low`, `area: frontend`
 
@@ -252,7 +298,7 @@ Acceptance criteria:
 - UI remains visually consistent.
 - Inline styles are reduced in touched pages.
 
-### 11. Add Screenshots to README
+### 12. Add Screenshots to README
 
 Labels: `priority: low`, `area: docs`, `good first issue`
 
