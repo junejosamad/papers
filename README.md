@@ -60,6 +60,24 @@ Never commit real credentials or production values.
 
 More details are available in `docs/CONFIGURATION.md` and `docs/ARCHITECTURE.md`.
 
+## Documentation
+
+Start with `docs/README.md`.
+
+Core docs:
+
+- `docs/INSTALLATION.md` - local setup
+- `docs/PROJECT_STRUCTURE.md` - folder and file map
+- `docs/ARCHITECTURE.md` - architecture overview
+- `docs/CONFIGURATION.md` - environment variables
+- `docs/DATABASE.md` - schema and migrations
+- `docs/API.md` - API routes and auth
+- `docs/EMAIL.md` - Brevo email implementation
+- `docs/USER_FLOWS.md` - main app workflows
+- `docs/DEVELOPMENT.md` - contributor development guide
+- `docs/DEPLOYMENT.md` - production/cPanel deployment
+- `docs/TROUBLESHOOTING.md` - common issues
+
 ## Email Sending
 
 Application email is sent through Brevo Transactional Email API over HTTPS using cURL:
