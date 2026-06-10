@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collexa Past Papers API Documentation</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --primary-light: #e8f0fe;
+            --success: #1e8e3e;
+            --warning: #f9ab00;
+            --danger: #d93025;
+            --info: #0d9488;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #f1f3f4;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --text-tertiary: #80868b;
+            --border: #dadce0;
+            --border-light: #e8eaed;
+            --shadow-sm: 0 1px 2px 0 rgba(60, 64, 67, .3), 0 1px 3px 1px rgba(60, 64, 67, .15);
+            --shadow-md: 0 1px 3px 0 rgba(60, 64, 67, .3), 0 4px 8px 3px rgba(60, 64, 67, .15);
+            --shadow-lg: 0 2px 6px 2px rgba(60, 64, 67, .15), 0 8px 24px 4px rgba(60, 64, 67, .15);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            font-size: 14px;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-light);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 16px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-section h1 {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .api-version {
+            background: var(--bg-tertiary);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Sidebar Navigation */
+        .docs-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 57px);
+        }
+
+        .sidebar {
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-light);
+            padding: 24px 0;
+            position: sticky;
+            top: 57px;
+            height: calc(100vh - 57px);
+            overflow-y: auto;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 24px 8px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 8px 24px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.15s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 48px;
+            background: var(--bg-secondary);
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+        }
+
+        .section {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 32px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-light);
+        }
+
+        .section h2 {
+            font-size: 28px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .section-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        /* Base URL Badge */
+        .base-url {
+            background: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            margin: 24px 0;
+            border: 1px solid var(--border);
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .info-box strong {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .warning-box {
+            background: #fef7e0;
+            border-left: 4px solid var(--warning);
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Endpoints */
+        .endpoint {
+            margin: 32px 0;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .endpoint:last-child {
+            border-bottom: none;
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .http-method {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .http-method.get {
+            background: #e6f4ea;
+            color: var(--success);
+        }
+
+        .http-method.post {
+            background: #e8f0fe;
+            color: var(--primary);
+        }
+
+        .http-method.put {
+            background: #fef7e0;
+            color: var(--warning);
+        }
+
+        .http-method.delete {
+            background: #fce8e6;
+            color: var(--danger);
+        }
+
+        .endpoint-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .auth-required {
+            background: #fef7e0;
+            color: #b06000;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .endpoint-description {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* Tables */
+        .params-section {
+            margin-top: 24px;
+        }
+
+        .params-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        thead {
+            background: var(--bg-tertiary);
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .param-name {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .param-type {
+            color: var(--info);
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .required-badge {
+            color: var(--danger);
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 16px 0;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid #2d2d2d;
+        }
+
+        code {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-light);
+            padding: 32px 48px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        footer p {
+            margin: 4px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .docs-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                padding: 24px;
+            }
+
+            .header-content {
+                padding: 16px 24px;
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Selection */
+        ::selection {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <h1>Collexa Past Papers API</h1>
+                <span class="api-version">v1.0.0</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-section-title">Getting Started</div>
+                    <a href="#overview" class="nav-link active">Overview</a>
+                    <a href="#auth" class="nav-link">Authentication</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Resources</div>
+                    <a href="#papers" class="nav-link">Papers</a>
+                    <a href="#favorites" class="nav-link">Favorites</a>
+                    <a href="#requests" class="nav-link">Requests</a>
+                    <a href="#user" class="nav-link">User</a>
+                    <a href="#notifications" class="nav-link">Notifications</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Reference</div>
+                    <a href="#meta" class="nav-link">Meta Data</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- Overview Section -->
+                <section class="section" id="overview">
+                    <h2>Overview</h2>
+                    <p class="section-description">RESTful API for Bahria University Past Papers Portal</p>
+
+                    <div class="base-url">
+                        <strong>Base URL:</strong> http://localhost/papers/api
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Authentication:</strong> Most endpoints require a JWT token. Include it in the
+                        Authorization header as a Bearer token.
+                    </div>
+
+                    <h3 style="margin-top: 32px; font-size: 18px; color: var(--text-primary);">Success Response</h3>
+                    <pre>{
+  "success": true,
+  "data": { ... },
+  "meta": {
+    "page": 1,
+    "per_page": 20,
+    "total": 100,
+    "total_pages": 5
+  }
+}</pre>
+
+                    <h3 style="margin-top: 24px; font-size: 18px; color: var(--text-primary);">Error Response</h3>
+                    <pre>{
+  "success": false,
+  "error": {
+    "code": "AUTH_REQUIRED",
+    "message": "Authentication required"
+  }
+}</pre>
+                </section>
+
+                <!-- Authentication Section -->
+                <section class="section" id="auth">
+                    <h2>Authentication</h2>
+                    <p class="section-description">Manage user authentication and sessions</p>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method post">POST</span>
+                            <span class="endpoint-path">/auth/login</span>
+                        </div>
+                        <p class="endpoint-description">Authenticate user with enrollment number or email</p>
+
+                        <div class="params-section">
+                            <div class="params-title">Request Body</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">login</span><span class="required-badge">*</span>
+                                        </td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Enrollment number or email address</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">password</span><span
+                                                class="required-badge">*</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>User password</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4 style="margin-top: 20px; font-size: 13px; font-weight: 600;">Response</h4>
+                        <pre>{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 1,
+      "enrollment_number": "01-134211-001",
+      "email": "user@bahria.edu.pk",
+      "full_name": "John Doe"
+    },
+    "token": "eyJhbGci...",
+    "refresh_token": "abc123...",
+    "expires_at": "2026-01-26T19:00:00Z"
+  }
+}</pre>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method post">POST</span>
+                            <span class="endpoint-path">/auth/register</span>
+                        </div>
+                        <p class="endpoint-description">Register a new user account (Bahria email required)</p>
+
+                        <div class="params-section">
+                            <div class="params-title">Request Body</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">enrollment_number</span><span
+                                                class="required-badge">*</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Format: XX-XXXXXX-XXX</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">email</span><span class="required-badge">*</span>
+                                        </td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Must be @bahria.edu.pk</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">full_name</span><span
+                                                class="required-badge">*</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>User's full name</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">campus</span><span class="required-badge">*</span>
+                                        </td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Campus identifier</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">department</span><span
+                                                class="required-badge">*</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Department code</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method post">POST</span>
+                            <span class="endpoint-path">/auth/refresh</span>
+                        </div>
+                        <p class="endpoint-description">Refresh JWT token using refresh token</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/auth/me</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Get current authenticated user information</p>
+                    </div>
+
+                    <div class="endpoint"
+                        style="background: #e8f5e9; padding: 24px; border-radius: 8px; border: 2px solid #4caf50;">
+                        <div class="endpoint-header">
+                            <span class="http-method post">POST</span>
+                            <span class="endpoint-path">/auth/firebase-login</span>
+                            <span
+                                style="background: #4caf50; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;">🔥
+                                Firebase</span>
+                        </div>
+                        <p class="endpoint-description">Authenticate using Firebase ID Token (for Collexa Flutter app
+                            integration). Automatically creates user if not exists.</p>
+
+                        <div class="warning-box">
+                            <strong>Security:</strong> All user data is extracted from the verified Firebase token. No
+                            user input is trusted.
+                        </div>
+
+                        <div class="params-section">
+                            <div class="params-title">Request Body</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">id_token</span><span
+                                                class="required-badge">*</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Firebase ID Token from <code>getIdToken()</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4 style="margin-top: 20px; font-size: 13px; font-weight: 600;">How to get the ID Token
+                            (Flutter)</h4>
+                        <pre>// Get Firebase ID token
+String? idToken = await FirebaseAuth.instance.currentUser?.getIdToken();
+
+// Send to Past Papers API
+final response = await http.post(
+  Uri.parse('http://localhost/papers/api/auth/firebase-login'),
+  headers: {'Content-Type': 'application/json'},
+  body: jsonEncode({'id_token': idToken}),
+);</pre>
+
+                        <h4 style="margin-top: 20px; font-size: 13px; font-weight: 600;">Response</h4>
+                        <pre>{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 516,
+      "enrollment_number": "01-134211-001",
+      "email": "user@student.bahria.edu.pk",
+      "full_name": "John Doe",
+      "campus": "Islamabad E-8",
+      "department": "CS"
+    },
+    "token": "eyJhbGci...",
+    "refresh_token": "abc123...",
+    "expires_at": "2026-01-26T23:41:29+05:00",
+    "is_new_user": false
+  }
+}</pre>
+
+                        <div class="info-box">
+                            <strong>Note:</strong> Use the returned <code>token</code> for all subsequent API calls in
+                            the <code>Authorization: Bearer {token}</code> header.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Papers Section -->
+                <section class="section" id="papers">
+                    <h2>Papers</h2>
+                    <p class="section-description">Browse, search, and manage past papers</p>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/papers</span>
+                        </div>
+                        <p class="endpoint-description">Retrieve a paginated list of papers with optional filters</p>
+
+                        <div class="params-section">
+                            <div class="params-title">Query Parameters</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">campus</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Filter by campus</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">department</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Filter by department</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">semester</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td>Filter by semester (1-10)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">course</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Search by course code or title</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">teacher</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Search by teacher name</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">exam_type</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Mid, Final, Quiz, etc.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">search</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>General search term</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">sort</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Sort by: newest, popular, downloads</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">page</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td>Page number (default: 1)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">per_page</span></td>
+                                        <td><span class="param-type">integer</span></td>
+                                        <td>Items per page (max: 100)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/papers/{id}</span>
+                        </div>
+                        <p class="endpoint-description">Get detailed information for a specific paper</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method post">POST</span>
+                            <span class="endpoint-path">/papers</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Upload a new past paper (multipart/form-data)</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/papers/{id}/download</span>
+                        </div>
+                        <p class="endpoint-description">Download the paper file</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/papers/trending</span>
+                        </div>
+                        <p class="endpoint-description">Get the most viewed papers</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/papers/recent</span>
+                        </div>
+                        <p class="endpoint-description">Get recently uploaded papers</p>
+                    </div>
+                </section>
+
+                <!-- Favorites Section -->
+                <section class="section" id="favorites">
+                    <h2>Favorites</h2>
+                    <p class="section-description">Manage user's favorite papers (Backpack)</p>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/favorites</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Retrieve all papers saved to favorites</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method post">POST</span>
+                            <span class="endpoint-path">/favorites/{paper_id}</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Add a paper to favorites</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method delete">DELETE</span>
+                            <span class="endpoint-path">/favorites/{paper_id}</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Remove a paper from favorites</p>
+                    </div>
+                </section>
+
+                <!-- Requests Section -->
+                <section class="section" id="requests">
+                    <h2>Community Requests</h2>
+                    <p class="section-description">Browse and create paper requests from the community</p>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/requests</span>
+                        </div>
+                        <p class="endpoint-description">List community paper requests</p>
+
+                        <div class="params-section">
+                            <div class="params-title">Query Parameters</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">status</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Open, Fulfilled, Closed, All</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">campus</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Filter by campus</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">search</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Search by course code</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="param-name">sort</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Sort by: votes, newest</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method post">POST</span>
+                            <span class="endpoint-path">/requests</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Create a new paper request</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method post">POST</span>
+                            <span class="endpoint-path">/requests/{id}/vote</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Toggle vote on a request</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method post">POST</span>
+                            <span class="endpoint-path">/requests/{id}/comments</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Add a comment to a request</p>
+                    </div>
+                </section>
+
+                <!-- User Section -->
+                <section class="section" id="user">
+                    <h2>User</h2>
+                    <p class="section-description">Manage user profile and view statistics</p>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/user/profile</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Get user profile with statistics</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method put">PUT</span>
+                            <span class="endpoint-path">/user/profile</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Update user profile information</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/user/stats</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Get detailed user statistics</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/user/uploads</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Get list of papers uploaded by the user</p>
+                    </div>
+                </section>
+
+                <!-- Notifications Section -->
+                <section class="section" id="notifications">
+                    <h2>Notifications</h2>
+                    <p class="section-description">Manage user notifications</p>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/notifications</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Get all notifications for the authenticated user</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/notifications/unread</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Get count of unread notifications</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method put">PUT</span>
+                            <span class="endpoint-path">/notifications/read-all</span>
+                            <span class="auth-required">🔒 Auth Required</span>
+                        </div>
+                        <p class="endpoint-description">Mark all notifications as read</p>
+                    </div>
+                </section>
+
+                <!-- Meta Section -->
+                <section class="section" id="meta">
+                    <h2>Meta Data</h2>
+                    <p class="section-description">Lookup endpoints for campuses, departments, and other reference data
+                    </p>
+
+                    <div class="info-box">
+                        <strong>Note:</strong> These endpoints are cached for 1 hour for optimal performance.
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/meta/campuses</span>
+                        </div>
+                        <p class="endpoint-description">Get list of all campuses</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/meta/departments</span>
+                        </div>
+                        <p class="endpoint-description">Get departments for a specific campus</p>
+
+                        <div class="params-section">
+                            <div class="params-title">Query Parameters</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="param-name">campus</span></td>
+                                        <td><span class="param-type">string</span></td>
+                                        <td>Campus identifier</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/meta/semesters</span>
+                        </div>
+                        <p class="endpoint-description">Get list of all semesters</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/meta/exam-types</span>
+                        </div>
+                        <p class="endpoint-description">Get list of exam types (Mid, Final, Quiz, etc.)</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p><strong>Collexa Past Papers API</strong> © 2026 Sigma ByteCraft</p>
+        <p>Built for Bahria University Students</p>
+    </footer>
+
+    <script>
+        // Active navigation highlighting
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '-20% 0px -70% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+    </script>

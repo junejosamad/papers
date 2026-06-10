@@ -1,0 +1,32 @@
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+config.local.php
+*.key
+*.pem
+
+# Runtime uploads and generated files
+uploads/*
+!uploads/.gitkeep
+!uploads/.htaccess
+api/cache/*
+!api/cache/.gitkeep
+*.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Dependency/build output
+vendor/
+node_modules/
+dist/
+build/
+
+# Local hosting artifacts
+admin/
+cgi-bin/
+.well-known/
