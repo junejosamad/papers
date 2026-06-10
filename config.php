@@ -53,6 +53,11 @@ define('SITE_URL', rtrim(envValue('SITE_URL', 'http://localhost/papers'), '/'));
 define('UPLOAD_DIR', __DIR__ . '/uploads/');
 define('MAX_FILE_SIZE', (int) envValue('MAX_FILE_SIZE', '10485760')); // 10MB in bytes
 
+// Optional support/payment details shown in the dashboard donation prompts.
+define('SUPPORT_PAYMENT_LABEL', envValue('SUPPORT_PAYMENT_LABEL', 'Support'));
+define('SUPPORT_PAYMENT_VALUE', envValue('SUPPORT_PAYMENT_VALUE', 'Configure payment details'));
+define('SUPPORT_PAYMENT_NOTE', envValue('SUPPORT_PAYMENT_NOTE', 'Set this in your deployment'));
+
 // Create uploads directory if it doesn't exist
 if (!file_exists(UPLOAD_DIR)) {
     mkdir(UPLOAD_DIR, 0755, true);

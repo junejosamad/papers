@@ -71,3 +71,15 @@ Test:
 - Paper preview/download
 - API `/api`
 - API login route
+
+## Optional Support/Donation Display
+
+The dashboard support prompt is configured through environment variables:
+
+```env
+SUPPORT_PAYMENT_LABEL=Support
+SUPPORT_PAYMENT_VALUE=Configure payment details
+SUPPORT_PAYMENT_NOTE=Set this in your deployment
+```
+
+Use public-facing values only. Do not commit real personal/payment details to Git.

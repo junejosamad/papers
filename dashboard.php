@@ -325,9 +325,9 @@ function buildPaginationUrl($page_num)
                     <div class="donation-method">
                         <span class="material-icons" style="font-size: 30px; color: var(--md-primary);">payments</span>
                         <div class="donation-details">
-                            <h4>Support</h4>
-                            <p>Configure payment details</p>
-                            <div style="font-size: 12px; color: #666; margin-top: 4px;">Set this in your deployment</div>
+                            <h4><?php echo htmlspecialchars(SUPPORT_PAYMENT_LABEL); ?></h4>
+                            <p><?php echo htmlspecialchars(SUPPORT_PAYMENT_VALUE); ?></p>
+                            <div style="font-size: 12px; color: #666; margin-top: 4px;"><?php echo htmlspecialchars(SUPPORT_PAYMENT_NOTE); ?></div>
                         </div>
                     </div>
                 </div>
@@ -642,8 +642,8 @@ function buildPaginationUrl($page_num)
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <span class="material-icons" style="font-size: 24px;">payments</span>
                                 <div>
-                                    <strong style="font-size: 16px;">Configure payment details</strong>
-                                    <div style="font-size: 12px; opacity: 0.8;">Set this in your deployment</div>
+                                    <strong style="font-size: 16px;"><?php echo htmlspecialchars(SUPPORT_PAYMENT_VALUE); ?></strong>
+                                    <div style="font-size: 12px; opacity: 0.8;"><?php echo htmlspecialchars(SUPPORT_PAYMENT_NOTE); ?></div>
                                 </div>
                             </div>
                         </div>

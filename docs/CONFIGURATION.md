@@ -21,6 +21,9 @@ cp .env.example .env
 | `BREVO_API_KEY` | Brevo Transactional Email API key |
 | `FROM_EMAIL` | Verified sender email |
 | `FROM_NAME` | Sender display name |
+| `SUPPORT_PAYMENT_LABEL` | Public label for optional support/donation method |
+| `SUPPORT_PAYMENT_VALUE` | Public value shown for optional support/donation method |
+| `SUPPORT_PAYMENT_NOTE` | Public note shown under support/donation details |
 
 ## Production Notes
 
@@ -44,4 +47,7 @@ FROM_EMAIL=papers@example.com
 FROM_NAME=Bahria Papers Portal
 API_ENV=production
 CORS_ALLOWED_ORIGINS=https://example.com
+SUPPORT_PAYMENT_LABEL=Support
+SUPPORT_PAYMENT_VALUE=Configure payment details
+SUPPORT_PAYMENT_NOTE=Set this in your deployment
 ```
