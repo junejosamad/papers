@@ -38,7 +38,8 @@ if (isset($_SESSION['user_id'])) {
 
 // Set headers for download
 header('Content-Type: application/octet-stream');
-header('Content-Disposition: attachment; filename="' . $paper['file_name'] . '"');
+header(contentDispositionHeader('attachment', $paper['file_name']));
+header('X-Content-Type-Options: nosniff');
 header('Content-Length: ' . filesize($file_path));
 header('Cache-Control: must-revalidate');
 header('Pragma: public');

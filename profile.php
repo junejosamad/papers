@@ -11,25 +11,28 @@ $stmt->execute([$_SESSION['user_id']]);
 $user = $stmt->fetch();
 
 // Handle profile update
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $full_name = sanitize($_POST['full_name']);
-    $campus = sanitize($_POST['campus']);
-    $department = sanitize($_POST['department']);
-    $semester = (int) $_POST['semester'];
-    $whatsapp_number = sanitize($_POST['whatsapp_number']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isValidCsrf()) {
+    $error = 'Your session has expired. Please refresh the page and try again.';
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $full_name = sanitize($_POST['full_name'] ?? '');
+    $campus = sanitize($_POST['campus'] ?? '');
+    $department = sanitize($_POST['department'] ?? '');
+    $semester = (int) ($_POST['semester'] ?? 0);
+    $whatsapp_number = sanitize($_POST['whatsapp_number'] ?? '');
 
     // Handle profile image upload
     $profile_image = $user['profile_image'];
     if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
-        $allowed = ['image/jpeg', 'image/jpg', 'image/png'];
+        // Extension comes from the detected MIME type, never from the user's filename
+        $allowed = ['image/jpeg' => 'jpg', 'image/jpg' => 'jpg', 'image/png' => 'png'];
         $file = $_FILES['profile_image'];
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
 
-        if (in_array($mime, $allowed) && $file['size'] <= 2097152) { // 2MB limit
-            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        if (isset($allowed[$mime]) && $file['size'] <= 2097152) { // 2MB limit
+            $ext = $allowed[$mime];
 
             // Create profile directory if not exists
             $profile_dir = UPLOAD_DIR . 'profile/';
@@ -187,6 +190,7 @@ $download_stats = $stmt->fetch();
                 <div class="profile-form-card">
                     <h3>Edit Profile</h3>
                     <form method="POST" enctype="multipart/form-data">
+                        <?php echo csrfField(); ?>
                         <div class="form-group">
                             <label>Profile Picture</label>
                             <input type="file" name="profile_image" accept="image/jpeg,image/jpg,image/png"

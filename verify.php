@@ -22,10 +22,13 @@ if ($token) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user) {
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
 
-    if (strlen($password) < 8) {
+    if (!isValidCsrf()) {
+        $error = 'Your session has expired. Please reopen the verification link and try again.';
+        $user = null;
+    } elseif (strlen($password) < 8) {
         $error = 'Password must be at least 8 characters long';
     } elseif ($password !== $confirm_password) {
         $error = 'Passwords do not match';
@@ -85,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user) {
                 </p>
 
                 <form method="POST" class="auth-form">
+                    <?php echo csrfField(); ?>
                     <div class="form-group">
                         <label>Password</label>
                         <input type="password" name="password" minlength="8" required>

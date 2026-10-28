@@ -144,6 +144,7 @@ function buildPaginationUrl($page_num)
             </div>
 
             <form action="upload.php" method="POST" enctype="multipart/form-data" id="uploadForm">
+                <?php echo csrfField(); ?>
                 <div class="upload-zone" id="uploadZone">
                     <span class="material-icons upload-icon">cloud_upload</span>
                     <h4>Drag & Drop or Click to Upload</h4>
@@ -218,7 +219,7 @@ function buildPaginationUrl($page_num)
 
                 <div class="form-group">
                     <label>Year *</label>
-                    <input type="number" name="year" class="input-field" placeholder="e.g., 2024" min="2000" max="2026"
+                    <input type="number" name="year" class="input-field" placeholder="e.g., 2024" min="2000" max="<?php echo (int) date('Y') + 1; ?>"
                         required>
                 </div>
 
@@ -350,6 +351,7 @@ function buildPaginationUrl($page_num)
             </div>
 
             <form id="reportForm" onsubmit="submitReport(event)">
+                <?php echo csrfField(); ?>
                 <input type="hidden" id="reportPaperId" name="paper_id">
 
                 <div class="form-group">
@@ -409,6 +411,18 @@ function buildPaginationUrl($page_num)
                     </a>
                 </div>
             </div>
+
+            <?php if (($_GET['upload'] ?? '') === 'success'): ?>
+                <div class="alert alert-success">
+                    <span class="material-icons">check_circle</span>
+                    Paper uploaded successfully!
+                </div>
+            <?php elseif (!empty($_GET['error']) && is_string($_GET['error'])): ?>
+                <div class="alert alert-error">
+                    <span class="material-icons">error</span>
+                    <?php echo htmlspecialchars($_GET['error'], ENT_QUOTES, 'UTF-8'); ?>
+                </div>
+            <?php endif; ?>
 
             <div class="main-content">
                 <div class="filters-card">

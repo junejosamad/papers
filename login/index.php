@@ -1,31 +1,35 @@
 <?php
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 require_once '../config.php';
 
 $error = '';
 $success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isValidCsrf()) {
+    $error = 'Your session has expired. Please refresh the page and try again.';
+    $_POST = [];
+}
 
 // Handle Login
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     $enrollment = sanitize($_POST['enrollment']);
     $password = $_POST['password'];
 
-    if (preg_match('/^[0-9]{2}-[0-9]{6}-[0-9]{3}$/', $enrollment)) {
+    if (rateLimitExceeded('login', 10, 900)) {
+        $error = 'Too many login attempts. Please wait 15 minutes and try again.';
+    } elseif (preg_match('/^[0-9]{2}-[0-9]{6}-[0-9]{3}$/', $enrollment)) {
         $stmt = $pdo->prepare("SELECT * FROM users WHERE enrollment_number = ? AND is_verified = 1");
         $stmt->execute([$enrollment]);
         $user = $stmt->fetch();
 
         if ($user && password_verify($password, $user['password_hash'])) {
             // Check if user is banned
-            if ($user['is_banned'] == 1 || $user['status'] === 'banned') {
+            if (!empty($user['is_banned']) || ($user['status'] ?? '') === 'banned') {
                 $ban_reason = !empty($user['ban_reason']) ? htmlspecialchars($user['ban_reason']) : 'No reason provided.';
                 $error = '<strong>Your account has been suspended.</strong><br>
                           <span style="font-size:13px;"><strong>Reason:</strong> ' . $ban_reason . '</span><br>
                           <span style="font-size:12px; color:#c0392b;">If you believe this is a mistake, please contact the administrator.</span>';
             } else {
+                session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['enrollment'] = $user['enrollment_number'];
                 $_SESSION['email'] = $user['email'];
@@ -52,7 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
     $enrollment = sanitize($_POST['enrollment_signup']);
 
-    if (preg_match('/^[0-9]{2}-[0-9]{6}-[0-9]{3}$/', $enrollment)) {
+    if (rateLimitExceeded('signup', 5, 3600)) {
+        $error = 'Too many signup requests. Please wait an hour and try again.';
+    } elseif (preg_match('/^[0-9]{2}-[0-9]{6}-[0-9]{3}$/', $enrollment)) {
         $email = $enrollment . '@student.bahria.edu.pk';
 
         // Check if already exists
@@ -106,7 +112,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['forgot_password'])) {
     $enrollment = sanitize($_POST['enrollment_forgot']);
 
-    if (preg_match('/^[0-9]{2}-[0-9]{6}-[0-9]{3}$/', $enrollment)) {
+    if (rateLimitExceeded('forgot_password', 5, 3600)) {
+        $error = 'Too many reset requests. Please wait an hour and try again.';
+    } elseif (preg_match('/^[0-9]{2}-[0-9]{6}-[0-9]{3}$/', $enrollment)) {
         $stmt = $pdo->prepare("SELECT * FROM users WHERE enrollment_number = ? AND is_verified = 1");
         $stmt->execute([$enrollment]);
         $user = $stmt->fetch();
@@ -176,6 +184,7 @@ if (isLoggedIn()) {
 
             <!-- Login Form -->
             <form id="loginForm" method="POST" class="auth-form">
+                <?php echo csrfField(); ?>
                 <div class="form-group">
                     <label>Enrollment Number</label>
                     <input type="text" name="enrollment" pattern="[0-9]{2}-[0-9]{6}-[0-9]{3}"
@@ -201,6 +210,7 @@ if (isLoggedIn()) {
 
             <!-- Signup Form -->
             <form id="signupForm" method="POST" class="auth-form" style="display: none;">
+                <?php echo csrfField(); ?>
                 <h3 style="text-align: center; margin-bottom: 20px; color: #333;">Create Account</h3>
                 <div class="form-group">
                     <label>Enrollment Number</label>
@@ -229,6 +239,7 @@ if (isLoggedIn()) {
 
             <!-- Forgot Password Form -->
             <form id="forgotForm" method="POST" class="auth-form" style="display: none;">
+                <?php echo csrfField(); ?>
                 <h3 style="text-align: center; margin-bottom: 20px; color: #333;">Reset Password</h3>
                 <div class="form-group">
                     <label>Enrollment Number</label>

@@ -23,6 +23,10 @@ For changed PHP files, run:
 find . -name "*.php" -not -path "./lib/*" -print0 | xargs -0 -n1 php -l
 ```
 
+The same check runs automatically on every pull request via `.github/workflows/php-lint.yml`.
+
+Web forms that change state must include `<?php echo csrfField(); ?>` and the handler must check `isValidCsrf()` (both defined in `config.php`).
+
 ## Code Style
 
 - Keep PHP changes compatible with shared hosting/cPanel environments.

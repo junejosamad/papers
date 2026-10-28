@@ -25,6 +25,13 @@ cp .env.example .env
 | `SUPPORT_PAYMENT_VALUE` | Public value shown for optional support/donation method |
 | `SUPPORT_PAYMENT_NOTE` | Public note shown under support/donation details |
 
+## Optional Variables
+
+| Variable | Purpose |
+| --- | --- |
+| `MAX_FILE_SIZE` | Max paper upload size in bytes (default `10485760`, 10MB) |
+| `RATE_LIMIT_DIR` | Writable directory for login/signup/reset rate-limit counters (default: system temp dir). Must not be web-accessible |
+
 ## Production Notes
 
 - Set `API_ENV=production`.

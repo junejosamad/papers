@@ -13,6 +13,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+if (!isValidCsrf()) {
+    echo json_encode(['success' => false, 'message' => 'Your session has expired. Please refresh the page and try again.']);
+    exit;
+}
+
 $paper_id = (int)($_POST['paper_id'] ?? 0);
 $report_type = sanitize($_POST['report_type'] ?? '');
 $description = sanitize($_POST['description'] ?? '');

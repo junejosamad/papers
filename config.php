@@ -1,5 +1,14 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+    session_start();
+}
 
 function loadEnvFile($path)
 {
@@ -76,7 +85,9 @@ try {
         ]
     );
 } catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
+    error_log("Database connection failed: " . $e->getMessage());
+    http_response_code(503);
+    die("Service temporarily unavailable. Please try again later.");
 }
 
 // Check Maintenance Mode
@@ -137,6 +148,71 @@ function logActivity($pdo, $user_id, $action_type, $paper_id = null)
         $_SERVER['REMOTE_ADDR'],
         $_SERVER['HTTP_USER_AGENT'] ?? ''
     ]);
+}
+
+// Allowed values for paper metadata
+const VALID_CAMPUSES = ['Islamabad E-8', 'Islamabad H-11', 'Karachi', 'Karachi Health Sciences', 'Lahore'];
+const VALID_EXAM_TYPES = ['Mid', 'Final', 'Quiz', 'Assignment', 'Other'];
+
+// CSRF Protection
+function csrfToken()
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function csrfField()
+{
+    return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8') . '">';
+}
+
+function isValidCsrf()
+{
+    $sent = $_POST['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+    return is_string($sent) && !empty($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $sent);
+}
+
+// Rate Limiting (file-based, keyed by action + client IP)
+function rateLimitExceeded($action, $maxAttempts, $windowSeconds)
+{
+    $dir = rtrim(envValue('RATE_LIMIT_DIR', sys_get_temp_dir()), '/\\') . '/papers_ratelimit';
+    if (!is_dir($dir) && !@mkdir($dir, 0700, true)) {
+        return false;
+    }
+
+    $file = $dir . '/' . hash('sha256', $action . '|' . ($_SERVER['REMOTE_ADDR'] ?? '')) . '.json';
+    $now = time();
+
+    $handle = @fopen($file, 'c+');
+    if (!$handle) {
+        return false;
+    }
+
+    flock($handle, LOCK_EX);
+    $attempts = json_decode(stream_get_contents($handle), true) ?: [];
+    $attempts = array_values(array_filter($attempts, fn($t) => $t > $now - $windowSeconds));
+    $exceeded = count($attempts) >= $maxAttempts;
+
+    if (!$exceeded) {
+        $attempts[] = $now;
+        ftruncate($handle, 0);
+        rewind($handle);
+        fwrite($handle, json_encode($attempts));
+    }
+
+    flock($handle, LOCK_UN);
+    fclose($handle);
+
+    return $exceeded;
+}
+
+// Content-Disposition header with a filename that cannot break out of the header
+function contentDispositionHeader($type, $filename)
+{
+    $ascii = preg_replace('/[^A-Za-z0-9_\-\. ]/', '_', $filename);
+    return 'Content-Disposition: ' . $type . '; filename="' . $ascii . '"; filename*=UTF-8\'\'' . rawurlencode($filename);
 }
 
 function isLoggedIn()

@@ -39,16 +39,23 @@ $stmt->execute([$paper_id]);
 // Set headers based on file type
 if ($paper['file_type'] === 'pdf') {
     header('Content-Type: application/pdf');
-    header('Content-Disposition: inline; filename="' . $paper['file_name'] . '"');
+    header(contentDispositionHeader('inline', $paper['file_name']));
 } else {
     // Image
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $file_path);
     finfo_close($finfo);
 
+    // Only serve known image types inline; anything else is forced to download
+    if (!in_array($mime, ['image/jpeg', 'image/png'], true)) {
+        $mime = 'application/octet-stream';
+    }
+
     header('Content-Type: ' . $mime);
-    header('Content-Disposition: inline; filename="' . $paper['file_name'] . '"');
+    header(contentDispositionHeader('inline', $paper['file_name']));
 }
+
+header('X-Content-Type-Options: nosniff');
 
 header('Content-Length: ' . filesize($file_path));
 header('Cache-Control: public, max-age=3600');

@@ -16,14 +16,32 @@ if (isset($_GET['msg'])) {
     }
 }
 
+// Get user info (needed for notification messages below)
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$current_user = $stmt->fetch();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isValidCsrf()) {
+    if (isset($_POST['toggle_vote'])) {
+        http_response_code(403);
+        exit;
+    }
+    $error = 'Your session has expired. Please refresh the page and try again.';
+    $_POST = [];
+}
+
 // Handle New Request Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['submit_request'])) {
-        $campus = sanitize($_POST['campus']);
-        $course_code = sanitize($_POST['course_code']);
-        $message = sanitize($_POST['message']);
+        $campus = sanitize($_POST['campus'] ?? '');
+        $course_code = sanitize($_POST['course_code'] ?? '');
+        $message = sanitize($_POST['message'] ?? '');
 
-        if ($campus && $course_code) {
+        if (!in_array($campus, VALID_CAMPUSES, true)) {
+            $error = "Please select a valid campus.";
+        } elseif (strlen($course_code) > 50) {
+            $error = "Course code is too long.";
+        } elseif ($course_code) {
             $stmt = $pdo->prepare("INSERT INTO paper_requests (user_id, campus, course_code, message) VALUES (?, ?, ?, ?)");
             if ($stmt->execute([$_SESSION['user_id'], $campus, $course_code, $message])) {
                 // Redirect to avoid resubmission
@@ -125,12 +143,12 @@ $filter_status = $_GET['status'] ?? 'Open'; // Default to Open
 // Build Query
 $query = "
     SELECT r.*, u.full_name, u.enrollment_number,
-    (SELECT COUNT(*) FROM request_votes v WHERE v.request_id = r.id AND v.user_id = " . $_SESSION['user_id'] . ") as has_voted
-    FROM paper_requests r 
-    JOIN users u ON r.user_id = u.id 
+    (SELECT COUNT(*) FROM request_votes v WHERE v.request_id = r.id AND v.user_id = ?) as has_voted
+    FROM paper_requests r
+    JOIN users u ON r.user_id = u.id
     WHERE 1=1
 ";
-$params = [];
+$params = [$_SESSION['user_id']];
 
 if ($search) {
     $query .= " AND (r.course_code LIKE ? OR r.message LIKE ?)";
@@ -155,10 +173,6 @@ $stmt = $pdo->prepare($query);
 $stmt->execute($params);
 $requests = $stmt->fetchAll();
 
-// Get user info
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$current_user = $stmt->fetch();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -364,7 +378,7 @@ $current_user = $stmt->fetch();
 
                             <div class="request-meta">
                                 <span class="material-icons" style="font-size: 14px; vertical-align: middle;">person</span>
-                                <?php echo htmlspecialchars($req['full_name'] ?: $req['enrollment_number']); ?> •
+                                <?php echo htmlspecialchars($req['full_name'] ?: $req['enrollment_number']); ?> â€¢
                                 <?php echo date('M j, Y', strtotime($req['created_at'])); ?>
                             </div>
 
@@ -439,6 +453,7 @@ $current_user = $stmt->fetch();
 
                                 <form method="POST" style="margin-top: 10px; display: flex; gap: 5px;">
                                     <input type="hidden" name="submit_comment" value="1">
+                                    <?php echo csrfField(); ?>
                                     <input type="hidden" name="request_id" value="<?php echo $req['id']; ?>">
                                     <input type="text" name="comment" placeholder="Add a comment..." required
                                         style="flex:1; padding: 5px; border-radius: 4px; border: 1px solid #ddd;">
@@ -466,6 +481,7 @@ $current_user = $stmt->fetch();
 
                 <form method="POST">
                     <input type="hidden" name="submit_request" value="1">
+                    <?php echo csrfField(); ?>
                     <div class="form-group">
                         <label>Campus *</label>
                         <select name="campus" required class="input-field">
@@ -495,6 +511,8 @@ $current_user = $stmt->fetch();
         </div>
 
         <script>
+            const CSRF_TOKEN = <?php echo json_encode(csrfToken()); ?>;
+
             const requestModal = document.getElementById('requestModal');
 
             function openRequestModal() { requestModal.style.display = 'flex'; }
@@ -510,6 +528,7 @@ $current_user = $stmt->fetch();
                 const formData = new FormData();
                 formData.append('toggle_vote', '1');
                 formData.append('request_id', requestId);
+                formData.append('csrf_token', CSRF_TOKEN);
 
                 fetch('requests.php', {
                     method: 'POST',
@@ -535,8 +554,14 @@ $current_user = $stmt->fetch();
                     inputAction.name = 'close_request';
                     inputAction.value = '1';
 
+                    const inputCsrf = document.createElement('input');
+                    inputCsrf.type = 'hidden';
+                    inputCsrf.name = 'csrf_token';
+                    inputCsrf.value = CSRF_TOKEN;
+
                     form.appendChild(inputId);
                     form.appendChild(inputAction);
+                    form.appendChild(inputCsrf);
                     document.body.appendChild(form);
                     form.submit();
                 }

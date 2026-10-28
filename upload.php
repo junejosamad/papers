@@ -4,16 +4,29 @@ requireLogin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
+        if (!isValidCsrf()) {
+            throw new Exception('Your session has expired. Please refresh the page and try again');
+        }
+
+        $max_size_mb = round(MAX_FILE_SIZE / 1048576, 1);
+
         // Validate file upload
-        if (!isset($_FILES['paper_file']) || $_FILES['paper_file']['error'] !== UPLOAD_ERR_OK) {
-            throw new Exception('File upload error');
+        $upload_error = $_FILES['paper_file']['error'] ?? UPLOAD_ERR_NO_FILE;
+        if ($upload_error !== UPLOAD_ERR_OK) {
+            $upload_messages = [
+                UPLOAD_ERR_INI_SIZE => "File size exceeds {$max_size_mb}MB limit",
+                UPLOAD_ERR_FORM_SIZE => "File size exceeds {$max_size_mb}MB limit",
+                UPLOAD_ERR_PARTIAL => 'File was only partially uploaded. Please try again',
+                UPLOAD_ERR_NO_FILE => 'Please choose a file to upload',
+            ];
+            throw new Exception($upload_messages[$upload_error] ?? 'File upload error');
         }
 
         $file = $_FILES['paper_file'];
 
         // Check file size
         if ($file['size'] > MAX_FILE_SIZE) {
-            throw new Exception('File size exceeds 10MB limit');
+            throw new Exception("File size exceeds {$max_size_mb}MB limit");
         }
 
         // Check file type
@@ -27,14 +40,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Get form data
-        $campus = sanitize($_POST['campus']);
-        $department = sanitize($_POST['department']);
-        $semester = (int) $_POST['semester'];
-        $course_code = sanitize($_POST['course_code']);
-        $course_title = sanitize($_POST['course_title']);
-        $teacher_name = sanitize($_POST['teacher_name']);
-        $year = (int) $_POST['year'];
-        $exam_type = sanitize($_POST['exam_type']);
+        $campus = sanitize($_POST['campus'] ?? '');
+        $department = sanitize($_POST['department'] ?? '');
+        $semester = (int) ($_POST['semester'] ?? 0);
+        $course_code = sanitize($_POST['course_code'] ?? '');
+        $course_title = sanitize($_POST['course_title'] ?? '');
+        $teacher_name = sanitize($_POST['teacher_name'] ?? '');
+        $year = (int) ($_POST['year'] ?? 0);
+        $exam_type = sanitize($_POST['exam_type'] ?? '');
+
+        // Validate form data
+        if ($department === '' || $course_code === '' || $course_title === '' || $teacher_name === '') {
+            throw new Exception('Please fill in all required fields');
+        }
+        if (strlen($course_code) > 20 || strlen($course_title) > 200 || strlen($teacher_name) > 100) {
+            throw new Exception('One or more fields are too long');
+        }
+        if (!in_array($campus, VALID_CAMPUSES, true)) {
+            throw new Exception('Invalid campus selected');
+        }
+        if (!in_array($exam_type, VALID_EXAM_TYPES, true)) {
+            throw new Exception('Invalid exam type');
+        }
+        if ($semester < 1 || $semester > 12) {
+            throw new Exception('Invalid semester');
+        }
+        if ($year < 2000 || $year > (int) date('Y') + 1) {
+            throw new Exception('Invalid year');
+        }
 
         // Generate title
         $title = "$course_title - $campus - $year ($exam_type)";
@@ -57,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $file_type = ($extension === 'pdf') ? 'pdf' : 'image';
 
         // Generate unique filename
-        $unique_name = uniqid() . '_' . time() . '.' . $extension;
+        $unique_name = bin2hex(random_bytes(16)) . '.' . $extension;
         $upload_path = UPLOAD_DIR . $unique_name;
 
         // Move uploaded file
@@ -92,13 +125,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         $paper_id = $pdo->lastInsertId();
+        $upload_path = null; // Saved to the database; keep the file from here on
         logActivity($pdo, $_SESSION['user_id'], 'upload', $paper_id);
 
         header('Location: dashboard.php?upload=success');
         exit;
 
     } catch (Exception $e) {
-        header('Location: dashboard.php?error=' . urlencode($e->getMessage()));
+        if (isset($upload_path) && file_exists($upload_path)) {
+            unlink($upload_path);
+        }
+
+        // Database errors are logged, not shown to the user
+        $message = $e instanceof PDOException ? 'Upload failed. Please try again' : $e->getMessage();
+        if ($e instanceof PDOException) {
+            error_log("Upload error: " . $e->getMessage());
+        }
+        header('Location: dashboard.php?error=' . urlencode($message));
         exit;
     }
 } else {

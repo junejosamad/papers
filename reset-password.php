@@ -32,9 +32,9 @@ if ($token) {
 
 // Handle password reset
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
-    $token = $_POST['token'];
-    $new_password = $_POST['new_password'];
-    $confirm_password = $_POST['confirm_password'];
+    $token = $_POST['token'] ?? '';
+    $new_password = $_POST['new_password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
 
     // Verify token again
     $stmt = $pdo->prepare("
@@ -48,8 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
 
     if (!$user) {
         $error = 'Invalid or expired password reset link.';
-    } elseif (strlen($new_password) < 6) {
-        $error = 'Password must be at least 6 characters long.';
+    } elseif (!isValidCsrf()) {
+        $error = 'Your session has expired. Please refresh the page and try again.';
+    } elseif (strlen($new_password) < 8) {
+        $error = 'Password must be at least 8 characters long.';
     } elseif ($new_password !== $confirm_password) {
         $error = 'Passwords do not match.';
     } else {
@@ -119,6 +121,7 @@ if (isLoggedIn()) {
             <?php elseif ($valid_token): ?>
                 <form method="POST" class="auth-form">
                     <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+                    <?php echo csrfField(); ?>
 
                     <div class="info-box"
                         style="margin-bottom: 20px; padding: 12px; background: #E3F2FD; border-radius: 8px; font-size: 14px; color: #1565C0;">
@@ -128,14 +131,14 @@ if (isLoggedIn()) {
 
                     <div class="form-group">
                         <label>New Password</label>
-                        <input type="password" name="new_password" minlength="6" required
-                            placeholder="Enter new password (min 6 characters)">
-                        <span class="helper-text">Minimum 6 characters</span>
+                        <input type="password" name="new_password" minlength="8" required
+                            placeholder="Enter new password (min 8 characters)">
+                        <span class="helper-text">Minimum 8 characters</span>
                     </div>
 
                     <div class="form-group">
                         <label>Confirm New Password</label>
-                        <input type="password" name="confirm_password" minlength="6" required
+                        <input type="password" name="confirm_password" minlength="8" required
                             placeholder="Re-enter new password">
                     </div>
 
